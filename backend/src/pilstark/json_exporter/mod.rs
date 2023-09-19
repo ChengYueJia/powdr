@@ -3,8 +3,8 @@ use std::cmp;
 use std::collections::HashMap;
 
 use ast::analyzed::{
-    Analyzed, BinaryOperator, Expression, FunctionValueDefinition, IdentityKind, PolyID,
-    PolynomialReference, PolynomialType, Reference, StatementIdentifier, UnaryOperator,
+    self, Analyzed, BinaryOperator, Expression, FunctionValueDefinition, IdentityKind, PolyID,
+    PolynomialReference, PolynomialType, StatementIdentifier, UnaryOperator,
 };
 use starky::types::{
     ConnectionIdentity, Expression as StarkyExpr, PermutationIdentity, PlookupIdentity,
@@ -238,10 +238,10 @@ impl<'a, T: FieldElement> Exporter<'a, T> {
                     ..DEFAULT_EXPR
                 },
             ),
-            Expression::Reference(Reference::Poly(reference)) => {
+            Expression::Reference(analyzed::Reference::Poly(reference)) => {
                 self.polynomial_reference_to_json(reference)
             }
-            Expression::Reference(Reference::LocalVar(_)) => {
+            Expression::Reference(analyzed::Reference::LocalVar(_)) => {
                 panic!("No local variable references allowed here.")
             }
             Expression::PublicReference(name) => (

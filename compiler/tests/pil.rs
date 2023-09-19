@@ -100,7 +100,7 @@ fn test_sum_via_witness_query() {
                 "\"in\", 3" => None, // This line checks that if we return "None", the system still tries to figure it out on its own.
                 _ => None,
             }
-        })
+        }),
     );
     // prover query string uses a different convention,
     // so we cannot directly use the halo2_proof and estark functions here.
@@ -116,7 +116,7 @@ fn test_witness_lookup() {
             "\"input\", 1" => Some(5.into()),
             "\"input\", 2" => Some(2.into()),
             _ => Some(7.into()),
-        })
+        }),
     );
     // halo2 fails with "gates must contain at least one constraint"
     gen_estark_proof(f, vec![3.into(), 5.into(), 2.into()]);
