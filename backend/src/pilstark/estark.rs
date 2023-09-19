@@ -60,14 +60,36 @@ impl<F: FieldElement> BackendImpl<F> for EStark {
 
         let mut pil: PIL = pilstark::json_exporter::export(pil);
 
-        /*
+        // TODO starky requires a fixed column with the equivalent
+        // semantics to Polygon zkEVM's `L1` column.
+        // It takes the name of that column via the API.
+        // Powdr generated PIL will always have `main.first_step`,
+        // but directly given PIL may not have it.
+        // This is a hack to inject such column if it doesn't exist.
+        // It should be eventually improved.
         let mut fixed = fixed.to_vec();
-        if fixed.iter().find(|&&(k, _)| k == "main.first_step").is_none() {
-            fixed.push(("main.first_step", [vec![F::one()], vec![F::zero(); fixed[0].1.len() - 1]].concat()));
+        if !fixed.iter().any(|&(k, _)| k == "main.first_step") {
+            use starky::types::Reference;
+            pil.nConstants += 1;
+            pil.references.insert(
+                "main.first_step".to_string(),
+                Reference {
+                    polType: None,
+                    type_: "constP".to_string(),
+                    id: fixed.len(),
+                    polDeg: fixed[0].1.len(),
+                    isArray: false,
+                    elementType: None,
+                    len: None,
+                },
+            );
+            fixed.push((
+                "main.first_step",
+                [vec![F::one()], vec![F::zero(); fixed[0].1.len() - 1]].concat(),
+            ));
         }
-        */
 
-        let const_pols = to_starky_pols_array(fixed, &pil, PolKind::Constant);
+        let const_pols = to_starky_pols_array(&fixed, &pil, PolKind::Constant);
 
         if witness.is_empty() {
             return (None, None);
